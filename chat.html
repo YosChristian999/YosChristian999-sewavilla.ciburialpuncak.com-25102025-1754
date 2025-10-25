@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="id">
+<head>
+    <script>
+(function () {
+  // Situs kamu bisa jalan di http://localhost/ciburial/... atau di root / di Hostinger.
+  const inSubdir = location.pathname.startsWith('/ciburial/');
+  window.ROOT_PREFIX = inSubdir ? '/ciburial' : '';
+  window.API_BASE    = ROOT_PREFIX + '/backend/api';
+  window.ASSETS_BASE = ROOT_PREFIX + '/assets';
+  window.UPLOADS_BASE= ROOT_PREFIX + '/uploads';
+
+  // Helper normalisasi URL yang masih punya prefix /ciburial/
+  window.normalizeUrl = function(u){
+    if (!u) return u;
+    return u.replace(/^\/ciburial\//, ROOT_PREFIX + '/');
+  };
+})();
+</script>
+<link rel="icon" href="/favicon.ico" type="image/png/ico">
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Chat | Ciburial Puncak</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="/assets/css/style.css" rel="stylesheet">
+<link rel="icon" href="/favicon.ico" type="image/x-icon">
+
+</head>
+<body>
+<div class="header"><b>Chat</b> — percakapan booking kamu</div>
+<div class="container">
+  <aside class="sidebar">
+    <ul id="convList" class="list"></ul>
+  </aside>
+  <section class="main">
+    <div id="messages" class="messages"></div>
+    <div class="form">
+      <input id="msgInput" type="text" placeholder="Tulis pesan... (jangan bagikan nomor HP)">
+      <button onclick="sendMsg()">Kirim</button>
+    </div>
+  </section>
+</div>
+
+<script>
+let currentBookingId = null;
+let pollTimer = null;
+
+async function loadConversations(){
+  const r = await fetch('/backend/api/chat/get_conversations.php', {credentials:'include'});
+  const j = await r.json();
+  const list = document.getElementById('convList');
+  list.innerHTML = '';
+  if (!j.ok) { list.innerHTML = '<li class="item">Gagal memuat</li>'; return; }
+  j.data.forEach(c=>{
+    const li = document.createElement('li');
+    li.className='item';
+    li.textContent = `[${c.order_id}] ${c.nama_villa || ''} ${c.customer_name?(' - ' + c.customer_name):''}`;
+    li.onclick=()=>openConv(c.booking_id);
+    list.appendChild(li);
+  });
+}
+
+async function openConv(bookingId){
+  currentBookingId = bookingId;
+  await loadMessages();
+  if (pollTimer) clearInterval(pollTimer);
+  pollTimer = setInterval(loadMessages, 5000);
+}
+
+async function loadMessages(){
+  if (!currentBookingId) return;
+  const r = await fetch('/backend/api/chat/get_messages.php?booking_id='+currentBookingId, {credentials:'include'});
+  const j = await r.json();
+  const box = document.getElementById('messages');
+  box.innerHTML = '';
+  if (!j.ok) { box.textContent='Gagal memuat pesan'; return; }
+  const meId = await whoami();
+  j.data.forEach(m=>{
+    const div = document.createElement('div');
+    div.className = 'bubble ' + (m.sender_id==meId ? 'me':'other');
+    div.textContent = m.sender_name + ': ' + m.message_text;
+    box.appendChild(div);
+  });
+  box.scrollTop = box.scrollHeight;
+}
+
+async function sendMsg(){
+  const input = document.getElementById('msgInput');
+  const text = input.value.trim();
+  if (!text || !currentBookingId) return;
+  const r = await fetch('/backend/api/chat/send_message.php', {
+    method:'POST', headers:{'Content-Type':'application/json'}, credentials:'include',
+    body: JSON.stringify({ booking_id: currentBookingId, message: text })
+  });
+  const j = await r.json();
+  if (j.ok) { input.value=''; loadMessages(); }
+}
+
+async function whoami(){
+  // pakai endpoint check_auth kamu; fallback: balikkan null -> maka "me" bubble tidak aktif
+  try {
+    const r = await fetch('/backend/api/auth/check_auth.php', {credentials:'include'}); 
+    const j = await r.json();
+    return j?.data?.user?.id || null;
+  } catch(e){ return null; }
+}
+
+loadConversations();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/assets/js/app.js" defer></script>
+
+</body>
+</html>

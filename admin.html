@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <title>Dashboard Admin · Ciburial</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@3.4.3/dist/tailwind.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tailwindcss/forms@0.5.7/dist/forms.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+  <link rel="stylesheet" href="/assets/admin/admin.css">
+</head>
+<body class="admin-body">
+  <div class="admin-shell">
+    <header class="admin-header glass-card animate__animated animate__fadeInDown">
+      <div class="brand-title">Ciburial Admin Center</div>
+      <div class="admin-nav">
+        <button class="nav-button active" data-panel="dashboard">Dashboard</button>
+        <button class="nav-button" data-panel="villas">Kelola Villa</button>
+        <button class="nav-button" data-panel="users">Kelola User</button>
+        <button class="nav-button" data-panel="chat">Chat</button>
+      </div>
+      <button id="logoutBtn" class="btn-outline">Logout</button>
+    </header>
+
+    <main class="admin-main">
+      <section id="panel-dashboard" class="panel glass-card active">
+        <div class="panel-header">
+          <div class="panel-title">
+            <span class="emoji">📊</span>
+            <div>
+              <h2>Ringkasan Operasional</h2>
+              <p>Statistik cepat untuk memantau performa platform.</p>
+            </div>
+          </div>
+        </div>
+        <div class="stats-grid" id="dashboardStats">
+          <div class="stat-card">
+            <span class="stat-label">Total Villa</span>
+            <span class="stat-value" id="statTotalVillas">0</span>
+            <span class="stat-sub">Unit tersedia di katalog.</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Status Tersedia</span>
+            <span class="stat-value" id="statAvailable">0</span>
+            <span class="stat-sub">Siap menerima reservasi.</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Status Dipesan</span>
+            <span class="stat-value" id="statBooked">0</span>
+            <span class="stat-sub">Dalam proses atau dijadwalkan.</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Pembaruan Data</span>
+            <span class="stat-value text-xl" id="statUpdatedAt">-</span>
+            <span class="stat-sub">Sinkron terakhir.</span>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="timeline">
+          <div class="timeline-item">
+            <h4>Kelola Villa aktif</h4>
+            <p>Kelola konten villa beserta media langsung dari panel ini.</p>
+          </div>
+          <div class="timeline-item">
+            <h4>Monitoring Operasional segera hadir</h4>
+            <p>Grafik booking, revenue, dan integrasi pembayaran Midtrans sedang dipersiapkan.</p>
+          </div>
+          <div class="timeline-item">
+            <h4>Chat terpadu (coming soon)</h4>
+            <p>Komunikasi admin, caretaker, dan tamu dalam satu tab chat real-time.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="panel-villas" class="panel glass-card">
+        <div class="panel-header">
+          <div class="panel-title">
+            <span class="emoji">🏡</span>
+            <div>
+              <h2>Kelola Villa</h2>
+              <p>Tambah, edit, hapus villa, dan kelola media (gambar &amp; video).</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="toolbar">
+          <button id="addVillaBtn" class="btn-primary">+ Tambah Villa</button>
+          <span class="status-dot">Terhubung ke API villa</span>
+        </div>
+
+        <div id="alertBox" class="alert hidden"></div>
+        <div id="villaList" class="villa-grid"></div>
+      </section>
+
+      <section id="panel-users" class="panel glass-card">
+        <div class="panel-header">
+          <div class="panel-title">
+            <span class="emoji">👥</span>
+            <div>
+              <h2>Kelola User</h2>
+              <p>Manajemen akun admin, caretaker, dan tamu.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="coming-soon">
+          <h3>Modul sedang dikembangkan</h3>
+          <p>Kelola user (role, aktivasi, reset kata sandi) akan tersedia dalam versi selanjutnya.</p>
+          <button class="btn-outline">Hubungi tim dev untuk prioritas</button>
+        </div>
+      </section>
+
+      <section id="panel-chat" class="panel glass-card">
+        <div class="panel-header">
+          <div class="panel-title">
+            <span class="emoji">💬</span>
+            <div>
+              <h2>Chat Operasional</h2>
+              <p>Koordinasi dengan tamu dan caretaker secara real-time.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="coming-soon">
+          <h3>Sebentar lagi!</h3>
+          <p>Tab chat akan menampilkan percakapan booking, status pesan, dan notifikasi.</p>
+          <button class="btn-outline">Request demo via WhatsApp</button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="villaModal" class="modal-backdrop">
+    <div class="modal-panel">
+      <div class="modal-header">
+        <div>
+          <p class="muted uppercase tracking-[0.3em] text-xs">Formulir</p>
+          <h3 class="text-xl font-semibold" id="modalTitle">Tambah Villa</h3>
+          <p class="text-sm text-slate-300" id="modalSubtitle">Isi data villa baru.</p>
+        </div>
+        <button class="modal-close" onclick="closeModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <form id="villaForm" class="space-y-5">
+          <input type="hidden" id="villaId">
+
+          <div>
+            <label class="block text-sm mb-1">Nama Villa</label>
+            <input id="namaVilla" type="text" class="form-control" required>
+          </div>
+
+          <div>
+            <label class="block text-sm mb-1">Deskripsi</label>
+            <textarea id="deskripsi" rows="3" class="form-control"></textarea>
+          </div>
+
+          <div class="form-row two">
+            <div>
+              <label class="block text-sm mb-1">Harga / malam</label>
+              <input id="harga" type="number" class="form-control" required>
+            </div>
+            <div>
+              <label class="block text-sm mb-1">Kapasitas</label>
+              <input id="kapasitas" type="number" class="form-control" required>
+            </div>
+          </div>
+
+          <div class="form-row two">
+            <div>
+              <label class="block text-sm mb-1">Lokasi</label>
+              <input id="lokasi" type="text" class="form-control">
+            </div>
+            <div>
+              <label class="block text-sm mb-1">Status</label>
+              <select id="status" class="form-control">
+                <option value="tersedia">Tersedia</option>
+                <option value="dipesan">Dipesan</option>
+                <option value="nonaktif">Nonaktif</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-sm mb-1">Cover URL</label>
+            <input id="coverUrl" type="text" class="form-control" placeholder="/uploads/placeholder.jpg">
+            <div class="media-cta text-xs text-slate-300 mt-2">
+              Klik salah satu media upload di grid untuk menjadikannya cover villa.
+            </div>
+          </div>
+
+          <div>
+            <h4 class="text-lg font-medium mb-3">Media</h4>
+            <input type="file" id="mediaFile" class="block w-full text-sm text-slate-300 file:bg-slate-800 file:border-0 file:px-3 file:py-2 file:rounded-lg">
+            <button type="button" id="uploadBtn" class="btn-outline mt-3">Upload</button>
+            <div id="mediaGrid" class="media-grid mt-4"></div>
+          </div>
+
+          <div class="flex justify-end gap-3 pt-3">
+            <button type="button" onclick="closeModal()" class="btn-outline">Batal</button>
+            <button type="submit" class="btn-primary">Simpan</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const villaList = document.getElementById('villaList');
+    const alertBox = document.getElementById('alertBox');
+    const modal = document.getElementById('villaModal');
+    const form = document.getElementById('villaForm');
+    const mediaGrid = document.getElementById('mediaGrid');
+    const mediaFile = document.getElementById('mediaFile');
+    const uploadBtn = document.getElementById('uploadBtn');
+    const navButtons = document.querySelectorAll('.nav-button');
+    const panels = document.querySelectorAll('.panel');
+
+    const statTotal = document.getElementById('statTotalVillas');
+    const statAvailable = document.getElementById('statAvailable');
+    const statBooked = document.getElementById('statBooked');
+    const statUpdatedAt = document.getElementById('statUpdatedAt');
+
+    let currentVillaId = 0;
+    let villaCache = [];
+
+    function switchPanel(target) {
+      navButtons.forEach(btn => {
+        const active = btn.dataset.panel === target;
+        btn.classList.toggle('active', active);
+      });
+      panels.forEach(panel => {
+        panel.classList.toggle('active', panel.id === `panel-${target}`);
+      });
+    }
+
+    navButtons.forEach(btn => {
+      btn.addEventListener('click', () => switchPanel(btn.dataset.panel));
+    });
+
+    function showAlert(msg, type='success') {
+      alertBox.textContent = msg;
+      alertBox.className = 'alert ' + type;
+      alertBox.classList.remove('hidden');
+      clearTimeout(showAlert.timer);
+      showAlert.timer = setTimeout(()=>alertBox.classList.add('hidden'), 3500);
+    }
+
+    async function fetchJSON(url, options={}) {
+      const res = await fetch(url, { credentials:'include', ...options });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const text = await res.text();
+      return JSON.parse(text);
+    }
+
+    async function loadVillas() {
+      villaList.innerHTML = '<div class="text-slate-400">Loading...</div>';
+      try {
+        const data = await fetchJSON('/backend/api/admin/villas/list.php');
+        if (!data.ok) throw new Error(data.error || 'Gagal memuat data');
+        villaCache = data.villas;
+        renderVillas();
+        updateDashboardStats();
+      } catch (err) {
+        villaList.innerHTML = `<p class="text-red-300">${err.message}</p>`;
+      }
+    }
+
+    function updateDashboardStats() {
+      const total = villaCache.length;
+      const tersedia = villaCache.filter(v => v.status === 'tersedia').length;
+      const dipesan = villaCache.filter(v => v.status === 'dipesan').length;
+      statTotal.textContent = total;
+      statAvailable.textContent = tersedia;
+      statBooked.textContent = dipesan;
+      statUpdatedAt.textContent = new Date().toLocaleString('id-ID', { hour12:false });
+    }
+
+    function renderVillas() {
+      villaList.innerHTML = '';
+      if (!villaCache.length) {
+        villaList.innerHTML = '<p class="text-slate-400">Belum ada data villa.</p>';
+        return;
+      }
+      villaCache.forEach(v => {
+        const card = document.createElement('article');
+        card.className = 'villa-card fade-in';
+        card.innerHTML = `
+          <div class="flex-between">
+            <h3>${v.nama_villa}</h3>
+            <span class="${badge(v.status)}">${labelStatus(v.status)}</span>
+          </div>
+          <p class="muted line-clamp-3">${v.deskripsi ?? '-'}</p>
+          <div class="grid grid-cols-2 gap-3 text-sm">
+            <div>
+              <p class="muted">Harga / malam</p>
+              <p class="font-semibold text-sky-300">Rp ${Intl.NumberFormat('id-ID').format(v.harga_per_malam)}</p>
+            </div>
+            <div>
+              <p class="muted">Kapasitas</p>
+              <p class="font-semibold">${v.kapasitas_maksimal} orang</p>
+            </div>
+            <div class="col-span-2">
+              <p class="muted">Lokasi</p>
+              <p>${v.lokasi ?? '-'}</p>
+            </div>
+          </div>
+          <div class="card-footer">
+            <button class="btn-primary flex-1" onclick="openModal(${v.id})">Edit</button>
+            <button class="btn-outline" onclick="deleteVilla(${v.id})">Hapus</button>
+          </div>
+        `;
+        villaList.appendChild(card);
+      });
+    }
+
+    function badge(status) {
+      if (status === 'tersedia') return 'tag tag-available';
+      if (status === 'dipesan') return 'tag tag-booked';
+      return 'tag tag-disabled';
+    }
+
+    function labelStatus(status) {
+      if (status === 'tersedia') return 'Available';
+      if (status === 'dipesan') return 'Booked';
+      return 'Disabled';
+    }
+
+    function openModal(id=0) {
+      currentVillaId = id;
+      document.getElementById('modalTitle').textContent = id ? 'Edit Villa' : 'Tambah Villa';
+      document.getElementById('modalSubtitle').textContent = id ? 'Perbarui detail villa.' : 'Isi data villa baru.';
+      form.reset();
+      mediaGrid.innerHTML = '<p class="text-sm text-slate-500">Belum ada media</p>';
+
+      if (id) {
+        const v = villaCache.find(x => x.id === id);
+        if (!v) return;
+        document.getElementById('villaId').value = v.id;
+        document.getElementById('namaVilla').value = v.nama_villa;
+        document.getElementById('deskripsi').value = v.deskripsi ?? '';
+        document.getElementById('harga').value = v.harga_per_malam;
+        document.getElementById('kapasitas').value = v.kapasitas_maksimal;
+        document.getElementById('lokasi').value = v.lokasi ?? '';
+        document.getElementById('coverUrl').value = v.cover_url ?? '';
+        document.getElementById('status').value = v.status ?? 'tersedia';
+        loadMedia(id);
+      } else {
+        document.getElementById('coverUrl').value = '/uploads/placeholder.jpg';
+      }
+
+      modal.classList.add('active');
+    }
+
+    function closeModal() {
+      modal.classList.remove('active');
+    }
+
+    form.addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      const payload = {
+        id: Number(document.getElementById('villaId').value) || 0,
+        nama_villa: document.getElementById('namaVilla').value.trim(),
+        deskripsi : document.getElementById('deskripsi').value.trim(),
+        harga_per_malam: Number(document.getElementById('harga').value),
+        kapasitas_maksimal: Number(document.getElementById('kapasitas').value),
+        lokasi: document.getElementById('lokasi').value.trim(),
+        cover_url: document.getElementById('coverUrl').value.trim() || '/uploads/placeholder.jpg',
+        status: document.getElementById('status').value
+      };
+      try {
+        const res = await fetch('/backend/api/admin/villas/save.php', {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          credentials:'include',
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (!data.ok) throw new Error(data.error || 'Gagal menyimpan');
+        showAlert('Data villa tersimpan', 'success');
+        closeModal();
+        loadVillas();
+      } catch (err) {
+        showAlert(err.message, 'error');
+      }
+    });
+
+    async function deleteVilla(id) {
+      if (!confirm('Hapus villa ini?')) return;
+      try {
+        const res = await fetch('/backend/api/admin/villas/delete.php?id='+id,{credentials:'include'});
+        const data = await res.json();
+        if (!data.ok) throw new Error(data.error || 'Gagal menghapus');
+        showAlert('Berhasil dihapus', 'success');
+        loadVillas();
+      } catch (err) {
+        showAlert(err.message,'error');
+      }
+    }
+
+    async function loadMedia(id) {
+      mediaGrid.innerHTML = '<p class="text-sm text-slate-400">Memuat media...</p>';
+      try {
+        const data = await fetchJSON('/backend/api/villas/get.php?id='+id);
+        mediaGrid.innerHTML = '';
+        if (!data.ok || !data.media || !data.media.length) {
+          mediaGrid.innerHTML = '<p class="text-sm text-slate-500">Belum ada media</p>';
+          return;
+        }
+        data.media.forEach(m => {
+          const card = document.createElement('div');
+          card.className = 'media-card';
+          const filename = m.url.split('/').pop();
+          card.innerHTML = `
+            <div>
+              ${m.type === 'video'
+                ? `<video src="${m.url}" controls></video>`
+                : `<img src="${m.url}" alt="${filename}">`
+              }
+            </div>
+            <p class="truncate">${filename}</p>
+            <span class="badge">${m.storage || 'fs'}</span>
+            ${m.storage === 'upload' && m.id
+              ? `<button class="btn-outline text-xs" onclick="deleteMedia(${m.id})">Hapus</button>`
+              : ''
+            }
+          `;
+          if (m.storage === 'upload' && m.id) {
+            card.querySelector('div').addEventListener('click', ()=>{
+              document.getElementById('coverUrl').value = m.url;
+              showAlert('Cover villa diperbarui (ingat klik Simpan).');
+            });
+          }
+          mediaGrid.appendChild(card);
+        });
+      } catch (err) {
+        mediaGrid.innerHTML='<p class="text-sm text-red-300">'+err.message+'</p>';
+      }
+    }
+
+    uploadBtn.addEventListener('click', async ()=>{
+      if (!currentVillaId) { showAlert('Simpan villa lebih dulu','error'); return; }
+      if (!mediaFile.files.length) { showAlert('Pilih file','error'); return; }
+
+      const formData = new FormData();
+      formData.append('villa_id', currentVillaId);
+      formData.append('file', mediaFile.files[0]);
+
+      uploadBtn.disabled = true;
+      uploadBtn.textContent = 'Uploading...';
+
+      try {
+        const res = await fetch('/backend/api/admin/villas/media-upload.php', {
+          method:'POST', credentials:'include', body: formData
+        });
+        const data = await res.json();
+        if (!data.ok) throw new Error(data.error || 'Upload gagal');
+        showAlert(data.duplicate ? 'File sudah ada.' : 'Media diunggah', 'success');
+        mediaFile.value = '';
+        loadMedia(currentVillaId);
+      } catch (err) {
+        showAlert(err.message,'error');
+      } finally {
+        uploadBtn.disabled = false;
+        uploadBtn.textContent = 'Upload';
+      }
+    });
+
+    window.deleteMedia = async (id)=>{
+      if (!confirm('Hapus media ini?')) return;
+      try {
+        const res = await fetch('/backend/api/admin/villas/media-delete.php?id='+id,{credentials:'include'});
+        const data = await res.json();
+        if (!data.ok) throw new Error(data.error || 'Gagal hapus media');
+        showAlert('Media dihapus','success');
+        loadMedia(currentVillaId);
+      } catch (err) {
+        showAlert(err.message,'error');
+      }
+    };
+
+    document.getElementById('addVillaBtn').addEventListener('click',()=>openModal(0));
+    document.getElementById('logoutBtn').addEventListener('click', async ()=>{
+      await fetch('/backend/api/auth/logout.php',{method:'POST', credentials:'include'});
+      window.location.href='/admin-login.html';
+    });
+
+    switchPanel('dashboard');
+    loadVillas();
+  </script>
+</body>
+</html>

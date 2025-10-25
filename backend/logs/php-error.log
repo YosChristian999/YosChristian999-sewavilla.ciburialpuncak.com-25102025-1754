@@ -1,0 +1,5 @@
+[15-Oct-2025 19:35:22 Europe/Berlin] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'status' in 'field list' in G:\xxxampp\htdocs\ciburial\backend\api\payment\create_transaction.php:50
+Stack trace:
+#0 G:\xxxampp\htdocs\ciburial\backend\api\payment\create_transaction.php(50): PDO->prepare('INSERT INTO pay...')
+#1 {main}
+  thrown in G:\xxxampp\htdocs\ciburial\backend\api\payment\create_transaction.php on line 50

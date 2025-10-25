@@ -1,0 +1,346 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    img-src 'self' data: https:;
+    media-src 'self' https: blob:;
+    style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com;
+    font-src  'self' data: https://fonts.gstatic.com;
+    script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://app.sandbox.midtrans.com https://app.midtrans.com;
+    connect-src 'self' https://api.sandbox.midtrans.com https://api.midtrans.com https://app.sandbox.midtrans.com https://app.midtrans.com https://cdn.jsdelivr.net;
+    frame-src https://app.sandbox.midtrans.com https://app.midtrans.com;
+    base-uri 'self';
+    object-src 'none';
+    upgrade-insecure-requests;
+  ">
+
+  <title>Villa Ciburial Puncak — Sewa Villa, Pembayaran Aman Midtrans</title>
+  <meta name="description" content="Sewa villa di Ciburial Puncak. Kolam renang, view pegunungan, pembayaran aman Midtrans.">
+  <link rel="icon" href="/favicon.ico" type="image/x-icon">
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+  <link href="/assets/css/style.css" rel="stylesheet">
+  
+  <script>
+/* ===== env boot: root/subdir awareness + helpers ===== */
+(function () {
+  // Deteksi apakah sedang di subfolder /ciburial/
+  var seg1 = (location.pathname.split('/')[1] || '').toLowerCase();
+  var inSubdir = (seg1 === 'ciburial');
+
+  window.ROOT_PREFIX  = inSubdir ? '/ciburial' : '';
+  window.API_BASE     = ROOT_PREFIX + '/backend/api';
+  window.ASSETS_BASE  = ROOT_PREFIX + '/assets';
+  window.UPLOADS_BASE = ROOT_PREFIX + '/uploads';
+
+  // Gabung base + path aman
+  window.joinPath = function (base, p) {
+    p = String(p || '').replace(/^\/+/, '');
+    return base + '/' + p;
+  };
+
+  // [PERBAIKAN]: Fungsi normalizeUrl disempurnakan agar bisa 
+  // menangani path root-relative ('/') dengan benar saat di subdir.
+  window.normalizeUrl = function (u) {
+    if (!u) return u;
+    u = String(u);
+
+    // 1. Cek apakah ini path root-relative (dimulai dgn '/')
+    if (u.startsWith('/')) {
+      // 2. Jangan tambahi prefix jika *sudah* punya prefix
+      if (window.ROOT_PREFIX && u.toLowerCase().startsWith(window.ROOT_PREFIX.toLowerCase() + '/')) {
+        // sudah benar, misal: /ciburial/about.html
+      } else {
+        // Ini path root (misal /about.html) tapi kita di subdir, tambahkan prefix
+        u = window.ROOT_PREFIX + u;
+      }
+    }
+    
+    // 3. Rapikan double slash (kecuali setelah "http(s):")
+    return u.replace(/([^:]\/)\/+/g, '$1');
+  };
+
+  // Helper lama tetap tersedia buat kode lain
+  window.basePath = window.basePath || (function(){ return location.pathname.replace(/[^\/]+$/, ''); });
+
+  // [PERBAIKAN BARU]: Script ini penting untuk memperbaiki semua path statis
+  // di HTML (seperti /assets/logo.png) agar sesuai dengan ROOT_PREFIX.
+  document.addEventListener('DOMContentLoaded', function() {
+    // Hanya jalankan jika kita di subdir
+    if (window.ROOT_PREFIX === '') return; 
+
+    // Perbaiki semua link (a) dan (link) yang root-relative
+    document.querySelectorAll('a[href^="/"], link[href^="/"]').forEach(function(el) {
+      var newHref = window.normalizeUrl(el.getAttribute('href'));
+      el.setAttribute('href', newHref);
+    });
+    
+    // Perbaiki semua gambar (img) dan script (script) yang root-relative
+    document.querySelectorAll('img[src^="/"], script[src^="/"]').forEach(function(el) {
+      var newSrc = window.normalizeUrl(el.getAttribute('src'));
+      el.setAttribute('src', newSrc);
+    });
+  });
+})();
+</script>
+
+</head>
+<body class="bg-dark text-light" style="font-family:'Poppins',system-ui,Segoe UI,Arial">
+
+  <div class="ticker">
+    <div class="track">
+      ✨ Selamat Datang di Sewa Villa Ciburial Puncak · Pembayaran aman Midtrans (BCA, BRI, Mandiri, DANA, OVO) · Budget custom dapat kita sesuaikan ✨
+    </div>
+  </div>
+      
+  <nav class="navbar navbar-expand-lg navbar-dark bg-nav sticky-top border-bottom border-opacity-25">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center gap-2" href="/">
+        <img class="logo-glow" src="/assets/images/logo.png" alt="Logo" width="28" height="28">
+        <span class="brand-name">Ciburial Puncak</span>
+      </a>
+
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="mainNav">
+        <ul class="navbar-nav ms-auto gap-lg-2">
+          <li class="nav-item"><a class="nav-link" href="/about.html">Tentang Kami</a></li>
+          <li class="nav-item"><a class="nav-link" href="/booking.html">Booking</a></li>
+          <li class="nav-item"><a class="nav-link" href="/contact.html">Kontak</a></li>
+          <li class="nav-item"><a class="nav-link" href="/login.html">Login</a></li>
+          <li class="nav-item"><a class="nav-link text-warning" href="/admin.html">Admin</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <header class="hero d-grid align-content-center text-center position-relative" style="min-height:72vh">
+     <div class="container position-relative" style="z-index:1" data-aos="fade-up">
+      <h1 class="display-5 fw-bold mb-2">Sewa Villa Terpercaya di Ciburial Puncak</h1>
+      <p class="lead text-light-emphasis mx-auto" style="max-width:860px">
+        Fasilitas premium, kolam renang, view pegunungan. Pembayaran aman melalui Midtrans.
+        Mulai jelajahi villa yang cocok untuk keluarga maupun acara komunitas lainnya.
+      </p>
+      <div class="d-flex gap-2 justify-content-center mt-3">
+        <button class="btn btn-info px-4" id="btnJelajahi" type="button">Jelajahi Villa</button>
+        <a class="btn btn-outline-light px-4" href="#payment">Metode Pembayaran</a>
+      </div>
+    </div>
+  </header>
+
+  <section id="featured" class="container my-5" data-aos="fade-up">
+    <h2 class="text-center text-info mb-4">Villa Pilihan Terbaik</h2>
+    <div class="mx-auto" style="max-width:820px">
+      <article class="card shadow-sm featured-card qm-card">
+        <img class="card-img-top cover"
+             src="/assets/BGHero.jpg"
+             alt="Villa Ciburial Puncak"
+             onerror="imgFallback(this)">
+        <div class="card-body text-center">
+          <h3 class="h4 mb-2">Villa Ciburial Puncak</h3>
+          <p class="text-muted small mb-3">
+            Koleksi villa premium dengan fasilitas lengkap dan pemandangan menakjubkan. Pilih villa sesuai kebutuhan Anda.
+          </p>
+          <button class="btn btn-info btn-lg px-4" id="btnOpenQuick">Lihat Detail Villa</button>
+          <div class="mt-3"><small class="text-muted">Pembayaran Aman via Midtrans</small></div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section id="payment" class="container py-4" data-aos="fade-up">
+    <h2 class="h4 fw-bold mb-3">Metode Pembayaran Aman</h2>
+    <div class="bg-body-tertiary rounded-4 p-3 border border-opacity-25">
+      <p class="mb-1">Pembayaran via Midtrans: Transfer Bank (BCA/BRI/BNI/Mandiri), Kartu, dan E-Wallet (DANA/OVO/GoPay).</p>
+      <small class="text-secondary">Konfirmasi otomatis & real-time.</small>
+    </div>
+  </section>
+
+  <footer class="py-4 mt-4 bg-nav border-top border-opacity-25">
+    <div class="container d-flex flex-wrap justify-content-between gap-2 small">
+      <div>© 2025 Ciburial Puncak</div>
+      <div class="text-secondary">Powered by Midtrans</div>
+    </div>
+  </footer>
+
+  <a class="wa-float" href="https://wa.me/6285213267896" target="_blank" rel="noopener" aria-label="Chat WhatsApp" title="Chat WhatsApp">
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.79.46 3.48 1.32 4.95L2.05 22l5.25-1.38c1.41.79 2.99 1.2 4.68 1.2h.01c5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2zM17.48 15.02c-.18.49-.96 1.04-1.39 1.18-.42.14-.97.16-1.53.08-.6-.08-1.35-.3-2.09-.58-.87-.33-1.63-.78-2.31-1.39-1.29-1.1-2.26-2.52-2.9-4.03-.23-.53-.45-1.12-.45-1.75 0-.61.26-1.14.53-1.54.26-.39.6-.53.88-.53s.53.08.73.12c.2.04.45.38.6.53.15.15.23.3.3.49.07.19.07.41.02.58-.05.17-.11.3-.18.41-.07.1-.15.22-.24.31-.09.1-.18.2-.26.28-.08.08-.16.17-.23.27-.08.1-.14.21-.14.33 0 .17.08.34.21.51.13.17.29.38.48.6.26.3.56.63.9.99 1.08 1.1 2.22 1.48 3.14 1.78.3.1.56.17.78.23.22.06.44.09.65.03.21-.06.44-.22.61-.41.17-.19.33-.41.49-.66.16-.25.33-.49.53-.66.2-.17.43-.26.7-.26.27 0 .52.09.7.26.18.17.26.39.26.61s.03.44-.06.66c-.09.22-.27.46-.39.63z"/>
+  </svg>
+</a>
+
+  <div class="modal fade" id="quickModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+      <div class="modal-content bg-body">
+        <div class="modal-header">
+          <h5 class="modal-title">Pilih Villa Favorit Anda</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row g-2 align-items-end mb-3">
+            <div class="col-12 col-md">
+              <label class="form-label small">Cari nama/teks</label>
+              <input type="search" class="form-control" id="fText" placeholder="mis. pemandangan, kolam, modern" />
+            </div>
+            <div class="col-6 col-md-2"><label class="form-label small">Harga min</label><input type="number" class="form-control" id="fMin" min="0" placeholder="0" /></div>
+            <div class="col-6 col-md-2"><label class="form-label small">Harga max</label><input type="number" class="form-control" id="fMax" min="0" placeholder="99999999" /></div>
+            <div class="col-6 col-md-2"><label class="form-label small">Kapasitas ≥</label><input type="number" class="form-control" id="fCap" min="0" placeholder="0" /></div>
+            <div class="col-6 col-md-2 d-grid"><button class="btn btn-outline-secondary" id="fReset">Reset</button></div>
+          </div>
+          <div id="qmGrid" class="row g-3"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js" defer></script>
+  <script> AOS.init({ duration: 700, once: true }); </script>
+
+  <script>
+  const rupiah = n => 'Rp ' + Number(n || 0).toLocaleString('id-ID');
+
+  function imgFallback(img) {
+    if (img.dataset.try1!=='1' && img.dataset.alt1) { img.dataset.try1='1'; img.src = img.dataset.alt1; return; }
+    if (img.dataset.try2!=='1' && img.dataset.alt2) { img.dataset.try2='1'; img.src = img.dataset.alt2; return; }
+    // [PERBAIKAN]: Pastikan placeholder juga menggunakan normalizeUrl
+    img.src = normalizeUrl('/assets/images/pleaceholder.jpg');
+  }
+
+  const COVER_BY_ID = {1:'Villa1Arikokena.png',2:'Villa2Tiger.png',3:'Villa3Cahaya.png',4:'Villa4BataCCitra.png',5:'Villa5BataAgricon.png',6:'Villa6Dinar3.png',7:'Villa7Yangtiq.png',8:'Villa8HDO.jpg',9:'Villa9Archie.jpg',10:'Villa10Rick.png',11:'Villa11Zambrud.jpg'};
+
+  function coverCandidates(v) {
+    const c = [];
+    if (v.url_gambar) c.push(normalizeUrl(v.url_gambar));
+    if (COVER_BY_ID[v.id]) c.push(normalizeUrl('/assets/images/VillaPic/' + COVER_BY_ID[v.id]));
+    c.push(normalizeUrl('/assets/images/pleaceholder.jpg'));
+    return c;
+  }
+
+  async function fetchVillas() {
+    const res = await fetch(`${API_BASE}/villas/list.php`, { cache: 'no-store' });
+    const text = await res.text();
+    let j; try { j = JSON.parse(text); } catch { throw new Error('list.php bukan JSON: ' + text.slice(0, 200)); }
+    if (j.ok === false) throw new Error(j.error || 'Gagal memuat data');
+    return Array.isArray(j) ? j : (j.villas || []);
+  }
+
+  function renderSkeleton() {
+    const wrap = document.getElementById('qmGrid');
+    wrap.innerHTML = Array.from({ length: 6 }).map(() => `
+      <div class="col-12 col-md-6 col-lg-4">
+        <article class="card qm-card h-100 loading">
+          <div class="cover skeleton" style="height:180px"></div>
+          <div class="card-body">
+            <div class="skeleton mb-2" style="height:20px;width:70%"></div>
+            <div class="skeleton mb-2" style="height:14px;width:90%"></div>
+            <div class="skeleton mb-2" style="height:14px;width:85%"></div>
+            <div class="d-flex justify-content-between">
+              <div class="skeleton" style="height:16px;width:100px"></div>
+              <div class="skeleton" style="height:32px;width:90px;border-radius:6px"></div>
+            </div>
+          </div>
+        </article>
+      </div>
+    `).join('');
+  }
+
+  function renderGrid(list) {
+    const wrap = document.getElementById('qmGrid');
+    if (!list.length) {
+      wrap.innerHTML = `<div class="col-12"><div class="alert alert-warning mb-0">Data villa belum tersedia.</div></div>`;
+      return;
+    }
+    wrap.innerHTML = list.map(v => {
+      const cands = coverCandidates(v);
+      const first = cands[0], alt1=cands[1]||'', alt2=cands[2]||'';
+      return `
+        <div class="col-12 col-md-6 col-lg-4">
+          <article class="card qm-card h-100">
+            <img class="cover" src="${first}" data-alt1="${alt1}" data-alt2="${alt2}"
+                 alt="${(v.nama_villa || v.nama || 'Villa')}" onerror="imgFallback(this)">
+            <div class="card-body">
+              <h6 class="mb-1">${v.nama_villa || v.nama || 'Villa'}</h6>
+              <p class="small text-secondary mb-3">${(v.deskripsi || '').slice(0, 150)}</p>
+              <div class="d-flex justify-content-between align-items-center">
+                <span class="text-info fw-semibold">${rupiah(v.harga_per_malam || v.harga)}/malam</span>
+                <a class="btn btn-info btn-sm" href="${normalizeUrl('/detail.html')}?villa=${encodeURIComponent(v.id)}">Pilih Villa Ini</a>
+              </div>
+            </div>
+          </article>
+        </div>`;
+    }).join('');
+  }
+
+  (function bindEvents() {
+    // [PERBAIKAN]: Lebih baik menyimpan elemen modal dan memanggil '.show()' 
+    // daripada membuat instance baru setiap kali diklik.
+    const qModalEl = document.getElementById('quickModal');
+    const qModal = qModalEl ? new bootstrap.Modal(qModalEl) : null;
+    const showModal = () => qModal?.show();
+    
+    document.getElementById('btnJelajahi')?.addEventListener('click', showModal);
+    document.getElementById('btnOpenQuick')?.addEventListener('click', showModal);
+    
+    // [PERBAIKAN]: Baris ini dihapus karena ID 'navVillaLink' tidak ada
+    // di HTML-mu, yang akan menyebabkan error.
+    // document.getElementById('navVillaLink')?.addEventListener('click', (e) => { e.preventDefault(); showModal(); });
+
+    const modalEl = document.getElementById('quickModal');
+    modalEl?.addEventListener('show.bs.modal', async () => {
+      try {
+        renderSkeleton();
+        const data = await fetchVillas();
+        // [INFO]: 'data.slice(0)' adalah cara lama untuk kloning array, 
+        // tapi ini berfungsi baik. Cara modern bisa pakai [...data]
+        window.__RAW_VILLAS = data.slice(0); 
+        renderGrid(window.__RAW_VILLAS);
+      } catch (e) {
+        console.error(e);
+        document.getElementById('qmGrid').innerHTML =
+          `<div class="col-12"><div class="alert alert-danger mb-0">Gagal memuat data villa. ${e.message}</div></div>`;
+      }
+    });
+
+    function applyFilter() {
+      const q    = document.getElementById('fText')?.value?.toLowerCase() || '';
+      const min  = Number(document.getElementById('fMin')?.value || 0);
+      const max  = Number(document.getElementById('fMax')?.value || 0);
+      const cap  = Number(document.getElementById('fCap')?.value || 0);
+      const src  = (window.__RAW_VILLAS || []);
+      const filtered = src.filter(v=>{
+        const nama=(v.nama_villa||v.nama||'').toLowerCase();
+        const desk=(v.deskripsi||'').toLowerCase();
+        const harga=Number(v.harga_per_malam||v.harga||0);
+        const kapas=Number(v.kapasitas_maksimal||v.kapasitas||0);
+        if (q && !(nama.includes(q)||desk.includes(q))) return false;
+        if (min && harga<min) return false;
+        if (max && harga>max) return false;
+        if (cap && kapas<cap) return false;
+        return true;
+      });
+      renderGrid(filtered);
+    }
+
+    document.getElementById('fText')?.addEventListener('input', applyFilter);
+    ['fMin','fMax','fCap'].forEach(id => document.getElementById(id)?.addEventListener('change', applyFilter));
+    document.getElementById('fReset')?.addEventListener('click', () => {
+      ['fText','fMin','fMax','fCap'].forEach(id => { const el = document.getElementById(id); if (el) el.value=''; });
+      applyFilter();
+    });
+  })();
+  </script>
+  
+  <script src="/assets/js/app.js" defer></script>
+
+</body>
+</html>

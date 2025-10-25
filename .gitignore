@@ -1,0 +1,25 @@
+@'
+# === secrets & config ===
+.env
+backend/config/.env
+*.key
+*.pem
+/backend/.env
+
+# === build/cache/temp ===
+vendor/
+node_modules/
+dist/
+.DS_Store
+Thumbs.db
+
+# === upload & media berat (optional, simpan nanti di storage/CDN) ===
+uploads/
+assets/images/Villas/*/*.mp4
+
+# === editor/IDE ===
+.vscode/
+'@ | Set-Content -Encoding UTF8 .gitignore
+# system
+.DS_Store
+Thumbs.db

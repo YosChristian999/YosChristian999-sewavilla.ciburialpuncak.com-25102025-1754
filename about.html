@@ -1,0 +1,73 @@
+<!doctype html><html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tentang Kami · Ciburial</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="assets/css/style.css" rel="stylesheet">
+<link rel="icon" href="/favicon.ico" type="image/x-icon">
+</head>
+<body>
+<nav class="navbar"> 
+<div class="brand">Ciburial</div> 
+<div class="menu" id="publicMenu"> <a href="/index.html">Beranda</a> 
+<a href="/booking.html">Booking</a> 
+<a href="/contact.html" class="active">Kontak</a> 
+<a href="/login.html" id="loginLink">Login</a> 
+<a href="/admin.html" id="adminLink" style="display:none">Admin</a> 
+</div> 
+</nav> 
+<div class="container"> 
+<section class="hero card"> 
+<h1>Hubungi Kami</h1> 
+<p>Tim kami siap membantu kebutuhan reservasi dan informasi villa.</p> 
+</section> 
+<section class="section grid-2"> 
+<div class="card"> 
+<h3>Tentang Ciburial Puncak</h3> 
+<p class="muted">Platform reservasi villa dengan pilihan curated area Puncak & sekitarnya...</p> 
+<p class="muted">Kami berkomitmen pada layanan, transparansi, dan pengalaman liburan terbaik.</p> 
+</div> 
+<div class="card"> <h3>Kontak</h3> 
+<form class="form"> 
+<div class="row"> 
+<input type="text" class="input" placeholder="Nama"> 
+<input type="email" class="input" placeholder="Email"> 
+</div> <input type="text" class="input" placeholder="Subjek"> 
+<textarea class="textarea" placeholder="Pesan Anda"></textarea> 
+<button class="btn btn-primary" type="submit">Kirim</button> 
+</form> 
+</div> 
+</section> <footer class="footer">© 2025 CiburialPuncak.com</footer> 
+</div> 
+<div class="watermark">CIBURIALPUNCAK.com</div> 
+    <script>
+(function () {
+  // Situs kamu bisa jalan di http://localhost/ciburial/... atau di root / di Hostinger.
+  const inSubdir = location.pathname.startsWith('/ciburial/');
+  window.ROOT_PREFIX = inSubdir ? '/ciburial' : '';
+  window.API_BASE    = ROOT_PREFIX + '/backend/api';
+  window.ASSETS_BASE = ROOT_PREFIX + '/assets';
+  window.UPLOADS_BASE= ROOT_PREFIX + '/uploads';
+
+  // Helper normalisasi URL yang masih punya prefix /ciburial/
+  window.normalizeUrl = function(u){
+    if (!u) return u;
+    return u.replace(/^\/ciburial\//, ROOT_PREFIX + '/');
+  };
+})();
+</script>
+<header class="mainnav"><nav class="container py-2"><a class="navbar-brand d-flex align-items-center gap-2" href="/">
+  <img class="logo-glow" src="/assets/images/logo.png" alt="Logo" width="28" height="28">
+  <span class="brand-name">Ciburial Puncak</span>
+</a>
+</nav></header>
+<main class="container py-5">
+  <h1 class="h3 fw-bold mb-3">Tentang Kami</h1>
+  <p>Kami menyediakan pilihan villa keluarga di kawasan Ciburial Puncak dengan pembayaran aman melalui Midtrans.</p>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/assets/js/app.js" defer></script>
+
+</body>
+</html>

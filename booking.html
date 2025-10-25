@@ -1,0 +1,74 @@
+<!doctype html> 
+<html lang="id"> 
+  <head> <meta charset="utf-8"/> 
+    <meta name="viewport" content="width=device-width, initial-scale=1"/> <!-- CSP HARUS DI DALAM HEAD -->
+<meta http-equiv="Content-Security-Policy" content=" default-src 'self'; img-src 'self' data: https:; media-src 'self' https: blob:; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://app.sandbox.midtrans.com https://app.midtrans.com; connect-src 'self' https://api.sandbox.midtrans.com https://api.midtrans.com https://app.sandbox.midtrans.com https://app.midtrans.com https://cdn.jsdelivr.net; frame-src https://app.sandbox.midtrans.com https://app.midtrans.com; base-uri 'self'; object-src 'none'; upgrade-insecure-requests; ">
+
+<title>Booking · Ciburial Puncak</title> <!-- CSS global futuristik --> 
+<link href="/assets/css/style.css" rel="stylesheet"> <!-- (opsional) Bootstrap untuk grid/form lama --> 
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"> <link rel="icon" href="/favicon.ico" type="image/x-icon"> 
+</head> <body> 
+  <nav class="navbar"> 
+    <div class="brand">Ciburial</div> 
+    <div class="menu"> 
+      <a href="/index.html">Beranda</a> 
+      <a href="/booking.html" class="active">Booking</a> 
+      <a href="/contact.html">Kontak</a> 
+      <a href="/admin-login.html">Login</a> 
+      <a href="/admin.html">Admin</a> 
+    </div> 
+  </nav> 
+  <div class="container"> 
+    <section class="hero card"> 
+      <h1>Booking Villa</h1> 
+      <p>Pilih tanggal dan lihat galeri.</p> 
+      <a class="cta" href="#vlist">Lihat Katalog</a> 
+    </section> 
+    <section class="section card"> 
+      <h3>Galeri</h3> 
+      <div id="gallery" class="gallery"></div> 
+    </section> <section class="section"> 
+      <div class="card mb-3"> 
+        <h3>Pencarian</h3> 
+        <div class="form"> 
+          <div class="row"> 
+            <input id="qText" class="input" type="search" placeholder="Cari nama/teks (mis. kolam, modern, view)"> <input id="qMin" class="input" type="number" min="0" placeholder="Harga min"> <input id="qMax" class="input" type="number" min="0" placeholder="Harga max"> 
+            <input id="qCap" class="input" type="number" min="0" placeholder="Kapasitas ≥"> 
+          </div> 
+          <button id="qReset" class="btn btn-primary" type="button">Reset</button> 
+        </div> 
+      </div>
+<div id="vlist" class="card">
+  <h3>Katalog Villa</h3>
+  <div id="vListGrid" class="grid-3"></div>
+</div>
+</section> 
+<footer class="footer">© 2025 CiburialPuncak.com · Powered by Midtrans</footer> 
+</div> 
+<div class="watermark">CIBURIALPUNCAK.com</div> <!-- (opsional) Bootstrap JS --> 
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script> 
+
+<!-- Script galeri --> 
+<script src="/assets/js/villa-gallery.js"></script> 
+<script> // API absolut untuk menghindari 404 karena ROOT_PREFIX 
+const API_BASE = '/backend/api'; 
+const rupiah = n => 'Rp ' + Number(n||0).toLocaleString('id-ID'); 
+function imgFallback(img){ if(img.dataset.try1!=='1' && img.dataset.alt1){ img.dataset.try1='1'; 
+img.src = img.dataset.alt1; return; } if(img.dataset.try2!=='1' && img.dataset.alt2){ img.dataset.try2='1'; 
+img.src = img.dataset.alt2; 
+return; 
+} 
+img.src = '/assets/images/placeholder.jpg'; 
+} // fallback cover default (bisa dipakai untuk placeholder awal) 
+ const COVER_BY_ID = { 1:'Villa1Arikokena.png',2:'Villa2Tiger.png',3:'Villa3Cahaya.png',4:'Villa4BataCCitra.png', 5:'Villa5BataAgricon.png',6:'Villa6Dinar3.png',7:'Villa7Yangtiq.png',8:'Villa8HDO.jpg', 9:'Villa9Archie.jpg',10:'Villa10Rick.png',11:'Villa11Zambrud.jpg' }; 
+ function coverCandidates(v){ const list = []; 
+  if (v.url_gambar) list.push(v.url_gambar); 
+  if (COVER_BY_ID[v.id]) list.push('/assets/images/VillaPic/' + COVER_BY_ID[v.id]); 
+  list.push('/assets/images/placeholder.jpg'); return list; } 
+  async function fetchVillas(){ // penting: absolut untuk menghindari salah prefix 
+  const res = await fetch(`${API_BASE}/villas/list.php`, { cache:'no-store' }); const txt = await res.text(); let j; try { j = JSON.parse(txt); } catch { throw new Error('list.php bukan JSON: '+txt.slice(0,200)); } if (j.ok === false) throw new Error(j.error || 'Gagal memuat'); return Array.isArray(j) ? j : (j.villas || []); } function render(list){ const wrap = document.getElementById('vListGrid'); if(!list.length){ wrap.innerHTML = `<div class="muted">Tidak ada villa yang cocok.</div>`; return; } wrap.innerHTML = list.map(v=>{ const cands = coverCandidates(v), first=cands[0], alt1=cands[1]||'', alt2=cands[2]||''; return ` <article class="card"> <img class="cover" src="${first}" data-alt1="${alt1}" data-alt2="${alt2}" alt="${v.nama_villa||'Villa'}" onerror="imgFallback(this)" style="width:100%;height:180px;object-fit:cover;border-radius:12px;"> <div style="margin-top:10px"> <h4 style="margin:0 0 6px">${v.nama_villa||'Villa'}</h4> <p class="muted" style="margin:0 0 10px">${(v.deskripsi||'').slice(0,150)}</p> <div class="flex-between"> <span class="pill">Rp ${Number(v.harga_per_malam||0).toLocaleString('id-ID')}/malam</span> <a class="btn btn-primary" href="/detail.html?villa=${encodeURIComponent(v.id)}">Detail</a> </div> </div> </article>`; }).join(''); } function applyFilter(){ const q = (document.getElementById('qText')?.value||'').toLowerCase(); const min=Number(document.getElementById('qMin')?.value||0); const max=Number(document.getElementById('qMax')?.value||0); const cap=Number(document.getElementById('qCap')?.value||0); const view = RAW.filter(v=>{ const nama=(v.nama_villa||'').toLowerCase(); const desk=(v.deskripsi||'').toLowerCase(); const harga=Number(v.harga_per_malam||0); const kapas=Number(v.kapasitas_maksimal||0); if (q && !(nama.includes(q)||desk.includes(q))) return false; if (min && harga<min) return false; if (max && harga>max) return false; if (cap && kapas<cap) return false; return true; }); render(view); } let RAW=[]; (async ()=>{ document.getElementById('vListGrid').innerHTML = '<div class="muted">Memuat…</div>'; try{ RAW = await fetchVillas(); render(RAW); }catch(e){ document.getElementById('vListGrid').innerHTML = `<div class="muted">Gagal memuat data villa. ${e.message}</div>`; } })(); document.getElementById('qText')?.addEventListener('input', applyFilter); ['qMin','qMax','qCap'].forEach(id=>document.getElementById(id)?.addEventListener('change', applyFilter)); document.getElementById('qReset')?.addEventListener('click', ()=>{ ['qText','qMin','qMax','qCap'].forEach(id=>{const el=document.getElementById(id); if(el) el.value='';}); applyFilter(); }); // Galeri untuk contoh (pakai villa id=1). Untuk halaman detail/booking spesifik, ganti id. initGallery(1,'gallery'); 
+  </script> 
+</body> 
+</html>

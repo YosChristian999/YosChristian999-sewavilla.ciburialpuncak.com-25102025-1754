@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <!-- ENV BOOT: deteksi root/subfolder + helpers -->
+  <script>
+  (function () {
+    var seg1 = (location.pathname.split('/')[1] || '').toLowerCase();
+    var inSubdir = (seg1 === 'ciburial');
+
+    window.ROOT_PREFIX  = inSubdir ? '/ciburial' : '';
+    window.API_BASE     = ROOT_PREFIX + '/backend/api';
+    window.ASSETS_BASE  = ROOT_PREFIX + '/assets';
+    window.UPLOADS_BASE = ROOT_PREFIX + '/uploads';
+
+    // Normalisasi URL yang masih pakai /ciburial/ dan rapikan slash
+    window.normalizeUrl = function (u) {
+      if (!u) return u;
+      u = String(u).replace(/^\/ciburial\//i, ROOT_PREFIX + '/');
+      if (u[0] !== '/') u = ROOT_PREFIX + '/' + u.replace(/^\/+/, '');
+      return u.replace(/([^:]\/)\/+/g, '$1');
+    };
+
+    // basePath untuk bikin link relatif (mis. thankyou.html)
+    window.basePath = window.basePath || (function(){ return location.pathname.replace(/[^\/]+$/, ''); });
+  })();
+  </script>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- CSP disamakan dengan halaman lain -->
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    img-src 'self' data: https:;
+    media-src 'self' https: blob:;
+    style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com;
+    font-src  'self' data: https://fonts.gstatic.com;
+    script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://app.sandbox.midtrans.com https://app.midtrans.com;
+    connect-src 'self' https://api.sandbox.midtrans.com https://api.midtrans.com https://app.sandbox.midtrans.com https://app.midtrans.com https://cdn.jsdelivr.net;
+    frame-src https://app.sandbox.midtrans.com https://app.midtrans.com;
+    base-uri 'self';
+    object-src 'none';
+    upgrade-insecure-requests;
+  ">
+
+  <title>Detail Villa · Ciburial Puncak</title>
+  <link rel="icon" href="${ROOT_PREFIX}/favicon.ico" type="image/x-icon">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="/assets/css/style.css" rel="stylesheet">
+
+  
+</head>
+<body class="pb-5">
+
+  <div class="container py-4">
+    <a href="${ROOT_PREFIX}/index.html#villas" class="btn btn-outline-light btn-sm mb-3" rel="noopener">← Kembali</a>
+    <h2 id="ttl" class="mb-3">Detail Villa</h2>
+
+    <div class="row g-4">
+      <!-- Carousel -->
+      <div class="col-lg-7">
+        <div class="bg-panel p-3 rounded-3">
+          <div id="mediaCarousel" class="carousel slide">
+            <div class="carousel-inner" id="carouselInner"></div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#mediaCarousel" data-bs-slide="prev">
+              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Sebelumnya</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#mediaCarousel" data-bs-slide="next">
+              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Berikutnya</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Deskripsi + Booking -->
+      <div class="col-lg-5">
+        <div class="p-3 rounded-3 bg-panel mb-4">
+          <h5 class="mb-3">Deskripsi</h5>
+          <div id="descLong" class="text-secondary"></div>
+        </div>
+
+        <div class="p-3 rounded-3 bg-panel">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <strong>Harga / malam</strong>
+            <div class="price-badge" id="harga">Rp 0</div>
+          </div>
+
+          <label class="form-label">Check-in</label>
+          <input class="form-control mb-2" type="date" id="in" required>
+          <label class="form-label">Check-out</label>
+          <input class="form-control mb-3" type="date" id="out" required>
+
+          <label class="form-label">Jumlah Tamu</label>
+          <select id="guest" class="form-select mb-3">
+            <option value="<=15">≤ 15 orang</option>
+            <option value="<20">&lt; 20 orang</option>
+            <option value=">25">&gt; 25 orang</option>
+            <option value="<30">&lt; 30 orang</option>
+          </select>
+
+          <label class="form-label">Nama Pemesan</label>
+          <input class="form-control mb-2" id="custName" placeholder="Nama lengkap" required>
+
+          <label class="form-label">Email</label>
+          <input class="form-control mb-2" type="email" id="custEmail" placeholder="email@contoh.com" required>
+
+          <label class="form-label">Jenis Pembayaran</label>
+          <select id="payPlan" class="form-select mb-3">
+            <option value="DP50">DP 50%</option>
+            <option value="FULL">Pelunasan 100%</option>
+          </select>
+
+          <div class="d-flex justify-content-between small text-secondary mb-2">
+            <span>Durasi</span><span id="dur">0 malam</span>
+          </div>
+          <div class="d-flex justify-content-between">
+            <strong>Total</strong><strong id="total">Rp 0</strong>
+          </div>
+          <div class="d-flex justify-content-between mt-1">
+            <span>Dibayar sekarang</span><strong id="bayarNow">Rp 0</strong>
+          </div>
+
+          <button type="button" id="payBtn" class="btn btn-info w-100 mt-3">
+            Bayar via Midtrans
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+  // ===== Helpers & konstanta =====
+  const rupiah = n => 'Rp ' + Number(n||0).toLocaleString('id-ID');
+  const PLACEHOLDER = () => normalizeUrl('/assets/images/pleaceholder.jpg');
+
+  // Libur nasional (sampel)
+  const HOL_2025 = ['2025-01-01','2025-01-27','2025-01-29','2025-03-28','2025-03-31','2025-04-01','2025-04-18','2025-04-20','2025-05-01','2025-05-12','2025-05-29','2025-06-06','2025-06-27','2025-08-17','2025-09-05','2025-12-25'];
+  const HOL_2026 = ['2026-01-01','2026-01-19','2026-02-17','2026-03-19','2026-04-13','2026-04-14','2026-05-01','2026-05-25','2026-05-29','2026-06-01','2026-06-19','2026-07-07','2026-08-17','2026-09-25','2026-12-25'];
+  const HOLIDAYS = new Set([...HOL_2025, ...HOL_2026]);
+  const ymd = d => d.toISOString().slice(0,10);
+  const isHoliday = d => HOLIDAYS.has(ymd(d));
+  function dayType(d){ const dow=d.getDay(); if(isHoliday(d)||dow===6||dow===0) return 'weekend'; if(dow===5) return 'friday'; return 'weekday'; }
+  function* eachDate(d1,d2){ for(let d=new Date(d1); d<d2; d.setDate(d.getDate()+1)) yield new Date(d); }
+
+  // ===== State halaman =====
+  const q = new URLSearchParams(location.search);
+  const id = parseInt(q.get('villa')||'0',10);
+  if(!id){ alert('ID villa tidak ada'); location.href = normalizeUrl('/index.html#villas'); }
+
+  let PRICES = {weekday:0, friday:0, weekend:0};
+  let hargaBase = 0;
+
+  // Cek resource ada (HEAD) – kalau server menolak HEAD, fungsi ini akan return false dan nanti fallback placeholder tetap tampil.
+  async function urlExists(url){
+    try{
+      const r = await fetch(url, {method:'HEAD', cache:'no-store'});
+      return r.ok;
+    }catch{ return false; }
+  }
+
+  // ===== Build slides (dari API, lalu fallback) =====
+  async function buildSlides(apiMedia, villaId){
+    const slides = [];
+
+    if (Array.isArray(apiMedia) && apiMedia.length){
+      for (const m of apiMedia){
+        const raw = m && m.url ? m.url : null;
+        if (!raw) continue;
+        const u = normalizeUrl(raw);
+        if (await urlExists(u)) {
+          slides.push({type:(m.type==='video'?'video':'image'), url:u});
+        }
+      }
+    }
+
+    if (!slides.length){
+      const base = normalizeUrl(`/assets/images/Villas/villa${villaId}/`);
+      const candidates = [
+        'cover.jpg','cover.png','1.jpg','1.png','2.jpg','2.png',
+        '3.jpg','3.png','4.jpg','4.png','video1.mp4','video.mp4'
+      ].map(n => base + n);
+
+      for (const u of candidates){
+        if (await urlExists(u)){
+          slides.push({type: u.endsWith('.mp4') ? 'video' : 'image', url: u});
+        }
+      }
+    }
+
+    if (!slides.length){
+      slides.push({type:'image', url: PLACEHOLDER()});
+    }
+    return slides;
+  }
+
+  // ===== Load detail dari API =====
+  async function loadDetail(){
+    const r = await fetch(`${API_BASE}/villas/get.php?id=${id}`, {cache:'no-store'});
+    const j = await r.json().catch(()=>null);
+    if(!j || !j.ok){ console.warn('API error:', j?.error); }
+
+    const v = j?.villa || {};
+    hargaBase = Number(v.harga_per_malam||0);
+
+    PRICES = j?.prices && (j.prices.weekday||j.prices.friday||j.prices.weekend)
+            ? j.prices
+            : {weekday:hargaBase, friday:hargaBase, weekend:hargaBase};
+
+    document.getElementById('ttl').textContent      = v.nama_villa || 'Detail Villa';
+    document.getElementById('descLong').textContent = v.deskripsi || '';
+    document.getElementById('harga').textContent    = rupiah(hargaBase);
+
+    const inner  = document.getElementById('carouselInner');
+    const slides = await buildSlides(Array.isArray(j?.media)? j.media : [], id);
+
+    const wm = (html) => `<div class="media-box wm">${html}</div>`;
+    const img = (src)  => wm(`<img src="${src}" alt="" onerror="this.src='${PLACEHOLDER()}'">`);
+    const vid = (src)  => wm(`<video src="${src}" preload="metadata" controls onerror="this.closest('.carousel-item')?.remove()"></video>`);
+
+    inner.innerHTML = slides.map((m,i)=>{
+      const node = m.type==='video' ? vid(m.url) : img(m.url);
+      return `<div class="carousel-item ${i? '':'active'}">${node}</div>`;
+    }).join('');
+
+    const cr = document.getElementById('mediaCarousel');
+    const bsCarousel = bootstrap.Carousel.getOrCreateInstance(cr, {interval:5000, ride:false, pause:false});
+    bsCarousel.cycle();
+    inner.querySelectorAll('video').forEach(vd=>{
+      vd.addEventListener('play',   ()=>bsCarousel.pause());
+      vd.addEventListener('seeking',()=>bsCarousel.pause());
+      vd.addEventListener('ended',  ()=>bsCarousel.cycle());
+    });
+
+    calc();
+  }
+
+  // ===== Hitung total & DP =====
+  function breakdownTotal(inStr, outStr){
+    const d1 = new Date(inStr), d2 = new Date(outStr);
+    if(!(d1 instanceof Date) || isNaN(d1) || !(d2 instanceof Date) || isNaN(d2) || d2<=d1){
+      return {nights:0, wd:0, fr:0, we:0, total:0};
+    }
+    let wd=0, fr=0, we=0, total=0;
+    for (const d of eachDate(d1,d2)){
+      const t = dayType(d);
+      if (t==='weekday'){ wd++; total += Number(PRICES.weekday||0); }
+      else if (t==='friday'){ fr++; total += Number(PRICES.friday||0); }
+      else { we++; total += Number(PRICES.weekend||0); }
+    }
+    return {nights:wd+fr+we, wd, fr, we, total};
+  }
+
+  function calc(){
+    const i = document.getElementById('in').value;
+    const o = document.getElementById('out').value;
+    const plan = document.getElementById('payPlan').value;
+    const br = breakdownTotal(i,o);
+
+    document.getElementById('dur').textContent   =
+      `${br.nights} malam (Wd:${br.wd} • Fri:${br.fr} • We/Holiday:${br.we})`;
+    document.getElementById('total').textContent = rupiah(br.total);
+    document.getElementById('bayarNow').textContent =
+      rupiah(plan==='DP50' ? Math.round(br.total*0.5) : br.total);
+  }
+
+  document.getElementById('in').addEventListener('change',  calc);
+  document.getElementById('out').addEventListener('change', calc);
+  document.getElementById('payPlan').addEventListener('change', calc);
+
+  // ===== Midtrans: Snap token & Snap JS =====
+  async function createSnapToken(payload){
+    const res  = await fetch(`${API_BASE}/payments/token.php`, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(payload)
+    });
+    const text = await res.text();
+    let j;
+    try { j = JSON.parse(text); }
+    catch { throw new Error('token.php bukan JSON: ' + text.slice(0,200)); }
+    if (!j.ok) throw new Error(j.error || 'Gagal membuat token');
+    return j.token;
+  }
+
+  // Muat client-key & snap.js secara dinamis
+  let snapReady = (async ()=>{
+    const r = await fetch(`${API_BASE}/payments/snap-client-key.php`, {cache:'no-store'});
+    const j = await r.json().catch(()=>null);
+    if(!j || !j.ok) throw new Error('Client key Midtrans tidak tersedia');
+
+    await new Promise((resolve, reject)=>{
+      const s = document.createElement('script');
+      s.src = j.snap_url;                // sandbox/production otomatis dari server
+      s.dataset.clientKey = j.client_key;
+      s.onload = resolve;
+      s.onerror = ()=>reject(new Error('Gagal memuat snap.js'));
+      document.head.appendChild(s);
+    });
+  })();
+
+  document.getElementById('payBtn').addEventListener('click', async ()=> {
+    try{
+      await snapReady;
+
+      const checkin  = document.getElementById('in').value;
+      const checkout = document.getElementById('out').value;
+      const plan     = document.getElementById('payPlan').value;
+      const guests   = document.getElementById('guest').value || '';
+      const name  = (document.getElementById('custName').value  || '').trim();
+      const email = (document.getElementById('custEmail').value || '').trim();
+
+      const br = breakdownTotal(checkin, checkout);
+      if (br.nights <= 0) { alert('Tanggal belum valid.'); return; }
+      if (!name || !email) { alert('Nama & Email wajib diisi.'); return; }
+
+      const bayarNow = plan==='DP50' ? Math.round(br.total*0.5) : br.total;
+
+      const token = await createSnapToken({
+        villa_id:  id,
+        checkin,  checkout,
+        nights:   br.nights,
+        guests,
+        breakdown:{ wd:br.wd, fr:br.fr, we:br.we, total:br.total },
+        pay_plan: plan,
+        amount:   bayarNow,
+        customer: { name, email, phone: '' },
+        enabled_payments: [
+          "credit_card","gopay","qris",
+          "bca_va","bni_va","bri_va","permata_va","echannel"
+        ]
+      });
+
+      window.snap.pay(token, {
+        onSuccess: (r)=> { location.href = basePath() + 'thankyou.html?order_id=' + encodeURIComponent(r.order_id); },
+        onPending: (r)=> { location.href = basePath() + 'thankyou.html?order_id=' + encodeURIComponent(r.order_id); },
+        onError:   (r)=> { alert('Pembayaran gagal: ' + (r.status_message || '')); },
+        onClose:   ()=> {}
+      });
+    }catch(e){
+      console.error(e);
+      alert('Gagal memulai pembayaran: ' + e.message);
+    }
+  });
+
+  // Start
+  loadDetail();
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/assets/js/app.js" defer></script>
+
+</body>
+</html>
