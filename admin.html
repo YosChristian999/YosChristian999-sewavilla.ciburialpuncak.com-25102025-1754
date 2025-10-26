@@ -80,7 +80,7 @@
             <span class="emoji">🏡</span>
             <div>
               <h2>Kelola Villa</h2>
-              <p>Tambah, edit, hapus villa, dan kelola media (gambar &amp; video).</p>
+              <p>Tambah, edit, hapus villa, dan kelola media (gambar & video).</p>
             </div>
           </div>
         </div>
@@ -219,8 +219,8 @@
 
     const statTotal = document.getElementById('statTotalVillas');
     const statAvailable = document.getElementById('statAvailable');
-    const statBooked = document.getElementById('statBooked');
-    const statUpdatedAt = document.getElementById('statUpdatedAt');
+    const statBooked   = document.getElementById('statBooked');
+    const statUpdatedAt= document.getElementById('statUpdatedAt');
 
     let currentVillaId = 0;
     let villaCache = [];
@@ -235,9 +235,7 @@
       });
     }
 
-    navButtons.forEach(btn => {
-      btn.addEventListener('click', () => switchPanel(btn.dataset.panel));
-    });
+    navButtons.forEach(btn => btn.addEventListener('click', () => switchPanel(btn.dataset.panel)));
 
     function showAlert(msg, type='success') {
       alertBox.textContent = msg;
@@ -268,13 +266,13 @@
     }
 
     function updateDashboardStats() {
-      const total = villaCache.length;
+      const total    = villaCache.length;
       const tersedia = villaCache.filter(v => v.status === 'tersedia').length;
-      const dipesan = villaCache.filter(v => v.status === 'dipesan').length;
-      statTotal.textContent = total;
-      statAvailable.textContent = tersedia;
-      statBooked.textContent = dipesan;
-      statUpdatedAt.textContent = new Date().toLocaleString('id-ID', { hour12:false });
+      const dipesan  = villaCache.filter(v => v.status === 'dipesan').length;
+      statTotal.textContent      = total;
+      statAvailable.textContent  = tersedia;
+      statBooked.textContent     = dipesan;
+      statUpdatedAt.textContent  = new Date().toLocaleString('id-ID', { hour12:false });
     }
 
     function renderVillas() {
@@ -295,7 +293,9 @@
           <div class="grid grid-cols-2 gap-3 text-sm">
             <div>
               <p class="muted">Harga / malam</p>
-              <p class="font-semibold text-sky-300">Rp ${Intl.NumberFormat('id-ID').format(v.harga_per_malam)}</p>
+              <p class="font-semibold text-sky-300">
+                Rp ${Intl.NumberFormat('id-ID').format(v.harga_per_malam)}
+              </p>
             </div>
             <div>
               <p class="muted">Kapasitas</p>
@@ -317,13 +317,13 @@
 
     function badge(status) {
       if (status === 'tersedia') return 'tag tag-available';
-      if (status === 'dipesan') return 'tag tag-booked';
+      if (status === 'dipesan')   return 'tag tag-booked';
       return 'tag tag-disabled';
     }
 
     function labelStatus(status) {
       if (status === 'tersedia') return 'Available';
-      if (status === 'dipesan') return 'Booked';
+      if (status === 'dipesan')   return 'Booked';
       return 'Disabled';
     }
 
@@ -337,14 +337,14 @@
       if (id) {
         const v = villaCache.find(x => x.id === id);
         if (!v) return;
-        document.getElementById('villaId').value = v.id;
+        document.getElementById('villaId'  ).value = v.id;
         document.getElementById('namaVilla').value = v.nama_villa;
         document.getElementById('deskripsi').value = v.deskripsi ?? '';
-        document.getElementById('harga').value = v.harga_per_malam;
+        document.getElementById('harga'    ).value = v.harga_per_malam;
         document.getElementById('kapasitas').value = v.kapasitas_maksimal;
-        document.getElementById('lokasi').value = v.lokasi ?? '';
+        document.getElementById('lokasi'   ).value = v.lokasi ?? '';
         document.getElementById('coverUrl').value = v.cover_url ?? '';
-        document.getElementById('status').value = v.status ?? 'tersedia';
+        document.getElementById('status'   ).value = v.status ?? 'tersedia';
         loadMedia(id);
       } else {
         document.getElementById('coverUrl').value = '/uploads/placeholder.jpg';
@@ -389,7 +389,7 @@
     async function deleteVilla(id) {
       if (!confirm('Hapus villa ini?')) return;
       try {
-        const res = await fetch('/backend/api/admin/villas/delete.php?id='+id,{credentials:'include'});
+        const res = await fetch('/backend/api/admin/villas/delete.php?id='+id, {credentials:'include'});
         const data = await res.json();
         if (!data.ok) throw new Error(data.error || 'Gagal menghapus');
         showAlert('Berhasil dihapus', 'success');
@@ -403,39 +403,66 @@
       mediaGrid.innerHTML = '<p class="text-sm text-slate-400">Memuat media...</p>';
       try {
         const data = await fetchJSON('/backend/api/villas/get.php?id='+id);
-        mediaGrid.innerHTML = '';
-        if (!data.ok || !data.media || !data.media.length) {
+        if (!data.ok || !Array.isArray(data.media) || !data.media.length) {
           mediaGrid.innerHTML = '<p class="text-sm text-slate-500">Belum ada media</p>';
           return;
         }
+
+        mediaGrid.innerHTML = '';
         data.media.forEach(m => {
           const card = document.createElement('div');
           card.className = 'media-card';
-          const filename = m.url.split('/').pop();
+
+          const filename = (m.url || '').split('/').pop() || '-';
           card.innerHTML = `
-            <div>
+            <div class="media-thumb" data-role="select-cover">
               ${m.type === 'video'
                 ? `<video src="${m.url}" controls></video>`
                 : `<img src="${m.url}" alt="${filename}">`
               }
             </div>
-            <p class="truncate">${filename}</p>
-            <span class="badge">${m.storage || 'fs'}</span>
-            ${m.storage === 'upload' && m.id
-              ? `<button class="btn-outline text-xs" onclick="deleteMedia(${m.id})">Hapus</button>`
-              : ''
-            }
+            <div class="media-meta">
+              <p class="truncate text-xs">${filename}</p>
+              <div class="meta-actions">
+                <span class="source-label ${m.storage === 'upload' ? 'badge-upload' : 'badge-fs'}">
+                  ${m.storage === 'upload' ? 'Upload' : 'File sistem'}
+                </span>
+                <button class="btn-mini danger"
+                        data-role="delete"
+                        data-storage="${m.storage ?? 'fs'}"
+                        data-id="${m.id ?? 0}"
+                        data-url="${m.url}">
+                  ✕
+                </button>
+              </div>
+            </div>
           `;
-          if (m.storage === 'upload' && m.id) {
-            card.querySelector('div').addEventListener('click', ()=>{
-              document.getElementById('coverUrl').value = m.url;
-              showAlert('Cover villa diperbarui (ingat klik Simpan).');
-            });
-          }
+
+          const thumb = card.querySelector('[data-role="select-cover"]');
+          thumb.addEventListener('click', () => {
+            document.getElementById('coverUrl').value = m.url;
+            showAlert('Cover villa diperbarui (ingat klik Simpan).');
+          });
+
+          const delBtn = card.querySelector('[data-role="delete"]');
+          delBtn.addEventListener('click', (ev) => {
+            ev.stopPropagation();
+            const storage = delBtn.dataset.storage || 'fs';
+            const mediaId = Number(delBtn.dataset.id || 0);
+            const mediaUrl = delBtn.dataset.url || '';
+
+            if (storage === 'upload' && mediaId > 0) {
+              deleteMedia(mediaId);
+            } else {
+              if (!confirm('Hapus file ini dari server?')) return;
+              deleteMediaFs(currentVillaId, mediaUrl);
+            }
+          });
+
           mediaGrid.appendChild(card);
         });
       } catch (err) {
-        mediaGrid.innerHTML='<p class="text-sm text-red-300">'+err.message+'</p>';
+        mediaGrid.innerHTML = '<p class="text-sm text-red-300">' + err.message + '</p>';
       }
     }
 
@@ -470,7 +497,7 @@
     window.deleteMedia = async (id)=>{
       if (!confirm('Hapus media ini?')) return;
       try {
-        const res = await fetch('/backend/api/admin/villas/media-delete.php?id='+id,{credentials:'include'});
+        const res = await fetch('/backend/api/admin/villas/media-delete.php?id='+id, {credentials:'include'});
         const data = await res.json();
         if (!data.ok) throw new Error(data.error || 'Gagal hapus media');
         showAlert('Media dihapus','success');
@@ -479,6 +506,23 @@
         showAlert(err.message,'error');
       }
     };
+
+    async function deleteMediaFs(villaId, url) {
+      try {
+        const res = await fetch('/backend/api/admin/villas/media-delete-fs.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ villa_id: villaId, url })
+        });
+        const data = await res.json();
+        if (!data.ok) throw new Error(data.error || 'Gagal hapus file sistem');
+        showAlert('Media file sistem dihapus', 'success');
+        loadMedia(villaId);
+      } catch (err) {
+        showAlert(err.message, 'error');
+      }
+    }
 
     document.getElementById('addVillaBtn').addEventListener('click',()=>openModal(0));
     document.getElementById('logoutBtn').addEventListener('click', async ()=>{

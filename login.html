@@ -39,40 +39,46 @@
   </div>
 
   <script>
-    const form = document.getElementById('loginForm');
-    const alertBox = document.getElementById('alertBox');
+  const form = document.getElementById('loginForm');
+  const alertBox = document.getElementById('alertBox');
 
-    function showError(msg) {
-      alertBox.textContent = msg;
-      alertBox.style.display = 'block';
-    }
+  const showError = (msg) => {
+    if (!alertBox) return;
+    alertBox.textContent = msg;
+    alertBox.style.display = 'block';
+  };
 
-    form.addEventListener('submit', async (e)=>{
-      e.preventDefault();
-      alertBox.style.display = 'none';
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (alertBox) alertBox.style.display = 'none';
 
-      const email = document.getElementById('email').value.trim();
-      const password = document.getElementById('password').value;
+    const email = document.getElementById('email')?.value.trim() || '';
+    const password = document.getElementById('password')?.value || '';
 
-      try {
-        const res = await fetch('/backend/api/auth/login.php', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
-          body: JSON.stringify({ email, password })
-        });
-        const text = await res.text();
-        let data;
-        try { data = JSON.parse(text); } catch (err) { throw new Error('Server mengirim respons yang tak terduga.'); }
+    try {
+      const res = await fetch('/backend/api/auth/login.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ email, password })
+      });
 
-        if (!data.ok) {
-          throw new Error(data.error || 'Login gagal.');
-        }
+      const data = await res.json();
+      if (!data.ok) throw new Error(data.error || 'Login gagal');
+
+      const me = await fetch('/backend/api/auth/me.php', { credentials: 'include' }).then(r => r.json());
+      const role = String(me.role || '').toLowerCase();
+
+      if (role === 'admin') {
         window.location.href = '/admin.html';
-      } catch (err) {
-        showError(err.message);
+      } else {
+        window.location.href = '/';
       }
-    });
-  </script>
+    } catch (err) {
+      showError(err.message);
+    }
+  });
+</script>
+
 </body>
 </html>

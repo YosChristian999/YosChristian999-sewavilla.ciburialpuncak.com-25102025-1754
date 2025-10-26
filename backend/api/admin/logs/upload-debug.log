@@ -1,0 +1,112 @@
+[2025-10-25T17:43:20+00:00] ------------------------------
+[2025-10-25T17:43:20+00:00] villa_id=1
+[2025-10-25T17:43:20+00:00] FILES: Array
+(
+    [name] => file_00000000b12461fda35a0410386272ee.png
+    [full_path] => file_00000000b12461fda35a0410386272ee.png
+    [type] => image/png
+    [tmp_name] => /tmp/phpCHh2hE
+    [error] => 0
+    [size] => 1707294
+)
+
+[2025-10-25T17:43:20+00:00] hash=2a2b0951042695ad3a717b9bb1930f35066571cd80f6f3775feb19474dc92335
+[2025-10-25T17:43:20+00:00] insert villa_media id=275
+[2025-10-25T17:44:49+00:00] ------------------------------
+[2025-10-25T17:44:49+00:00] villa_id=1
+[2025-10-25T17:44:49+00:00] FILES: Array
+(
+    [name] => file_00000000b12461fda35a0410386272ee.png
+    [full_path] => file_00000000b12461fda35a0410386272ee.png
+    [type] => image/png
+    [tmp_name] => /tmp/phpIMbRup
+    [error] => 0
+    [size] => 1707294
+)
+
+[2025-10-25T17:44:49+00:00] hash=2a2b0951042695ad3a717b9bb1930f35066571cd80f6f3775feb19474dc92335
+[2025-10-25T17:44:49+00:00] duplicate detected id=275
+[2025-10-25T17:55:39+00:00] ------------------------------
+[2025-10-25T17:55:39+00:00] villa_id=1
+[2025-10-25T17:55:39+00:00] FILES: Array
+(
+    [name] => file_00000000b12461fda35a0410386272ee.png
+    [full_path] => file_00000000b12461fda35a0410386272ee.png
+    [type] => image/png
+    [tmp_name] => /tmp/phpZeZn9F
+    [error] => 0
+    [size] => 1707294
+)
+
+[2025-10-25T17:55:39+00:00] hash=2a2b0951042695ad3a717b9bb1930f35066571cd80f6f3775feb19474dc92335
+[2025-10-25T17:55:39+00:00] duplicate detected id=275
+[2025-10-25T18:04:05+00:00] ------------------------------
+[2025-10-25T18:04:05+00:00] villa_id=4
+[2025-10-25T18:04:05+00:00] FILES: Array
+(
+    [name] => file_00000000b12461fda35a0410386272ee.png
+    [full_path] => file_00000000b12461fda35a0410386272ee.png
+    [type] => image/png
+    [tmp_name] => /tmp/phpEawKVT
+    [error] => 0
+    [size] => 1707294
+)
+
+[2025-10-25T18:04:05+00:00] hash=2a2b0951042695ad3a717b9bb1930f35066571cd80f6f3775feb19474dc92335
+[2025-10-25T18:04:05+00:00] insert villa_media id=276
+[2025-10-25T18:12:38+00:00] ------------------------------
+[2025-10-25T18:12:38+00:00] villa_id=4
+[2025-10-25T18:12:38+00:00] FILES: Array
+(
+    [name] => file_00000000b12461fda35a0410386272ee.png
+    [full_path] => file_00000000b12461fda35a0410386272ee.png
+    [type] => image/png
+    [tmp_name] => /tmp/phppPWNB2
+    [error] => 0
+    [size] => 1707294
+)
+
+[2025-10-25T18:12:38+00:00] hash=2a2b0951042695ad3a717b9bb1930f35066571cd80f6f3775feb19474dc92335
+[2025-10-25T18:12:38+00:00] duplicate detected id=276
+[2025-10-25T18:51:25+00:00] ------------------------------
+[2025-10-25T18:51:25+00:00] villa_id=2
+[2025-10-25T18:51:25+00:00] FILES: Array
+(
+    [name] => file_00000000b12461fda35a0410386272ee.png
+    [full_path] => file_00000000b12461fda35a0410386272ee.png
+    [type] => image/png
+    [tmp_name] => /tmp/phpLXY2CK
+    [error] => 0
+    [size] => 1707294
+)
+
+[2025-10-25T18:51:25+00:00] hash=2a2b0951042695ad3a717b9bb1930f35066571cd80f6f3775feb19474dc92335
+[2025-10-25T18:51:25+00:00] insert villa_media id=277
+[2025-10-26T03:25:35+00:00] ------------------------------
+[2025-10-26T03:25:35+00:00] villa_id=30
+[2025-10-26T03:25:35+00:00] FILES: Array
+(
+    [name] => Screenshot_20251024_210901.jpg
+    [full_path] => Screenshot_20251024_210901.jpg
+    [type] => image/jpeg
+    [tmp_name] => /tmp/phppGZCeH
+    [error] => 0
+    [size] => 617623
+)
+
+[2025-10-26T03:25:35+00:00] hash=bf07474377c769d3ad418a70961ef895b22f766b3cf2b7878865023494c15a01
+[2025-10-26T03:25:35+00:00] insert villa_media id=278
+[2025-10-26T03:27:26+00:00] ------------------------------
+[2025-10-26T03:27:26+00:00] villa_id=31
+[2025-10-26T03:27:26+00:00] FILES: Array
+(
+    [name] => e_receipt_20251024_191628.jpg
+    [full_path] => e_receipt_20251024_191628.jpg
+    [type] => image/jpeg
+    [tmp_name] => /tmp/phpXXeHFn
+    [error] => 0
+    [size] => 560976
+)
+
+[2025-10-26T03:27:26+00:00] hash=7d78464283fdc1c04d5b8b3334b47cca4345dab4ca3d163d9b86a22bf37d5d47
+[2025-10-26T03:27:26+00:00] insert villa_media id=279

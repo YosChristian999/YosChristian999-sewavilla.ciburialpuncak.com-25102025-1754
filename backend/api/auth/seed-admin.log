@@ -1,0 +1,8 @@
+seed-admin start
+seed-admin fail: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'status' in 'INSERT INTO' @ /home/u123504435/domains/sewavilla.ciburialpuncak.com/public_html/backend/api/auth/seed-admin.php:35
+seed-admin start
+seed-admin fail: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'status' in 'INSERT INTO' @ /home/u123504435/domains/sewavilla.ciburialpuncak.com/public_html/backend/api/auth/seed-admin.php:35
+seed-admin start
+seed-admin fail: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'status' in 'INSERT INTO' @ /home/u123504435/domains/sewavilla.ciburialpuncak.com/public_html/backend/api/auth/seed-admin.php:35
+seed-admin start
+seed-admin fail: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'status' in 'INSERT INTO' @ /home/u123504435/domains/sewavilla.ciburialpuncak.com/public_html/backend/api/auth/seed-admin.php:35
